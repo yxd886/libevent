@@ -9,7 +9,7 @@
 
 static inline BIO_METHOD *BIO_meth_new(int type, const char *name)
 {
-	BIO_METHOD *biom = calloc(1, sizeof(BIO_METHOD));
+	BIO_METHOD *biom = (BIO_METHOD *)calloc(1, sizeof(BIO_METHOD));
 
 	if (biom != NULL) {
 		biom->type = type;
