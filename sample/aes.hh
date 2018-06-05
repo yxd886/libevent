@@ -141,19 +141,13 @@ typedef uint8_t state_t[4][4];
 
 
 
-struct aes_flow_state {
-    uint8_t key[AES_KEYLEN];
-    uint8_t iv[16] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
-    bool is_encryption;
-};
+
+uint8_t key[AES_KEYLEN] = {0};
+uint8_t iv[16] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 
 
 
- inline void init_automataState(struct aes_flow_state& state){
-    for(int i = 0; i < AES_KEYLEN; i++){
-        state.key[i] = i * 2;
-    }
-}
+
 
 
  /*inline static void nf_logic(void *pkt, struct aes_flow_state* state, void *info) {
