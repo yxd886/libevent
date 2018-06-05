@@ -1318,8 +1318,6 @@ evhttp_request_dispatch(struct evhttp_connection* evcon)
     printf("after encrypt\n");
     printf("%.*s\n", _len, content);
     evbuffer_add(output_buffer,content,_len);
-
-
 	evhttp_write_buffer(evcon, evhttp_write_connectioncb, NULL);
 }
 

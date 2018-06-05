@@ -468,12 +468,15 @@ main(int argc, char **argv)
 		evhttp_add_header(output_headers, "Content-Length", buf);
 		fclose(f);
 	}
-
-	r = evhttp_make_request(evcon, req, data_file ? EVHTTP_REQ_POST : EVHTTP_REQ_GET, uri);
-	if (r != 0) {
-		fprintf(stderr, "evhttp_make_request() failed\n");
-		goto error;
+	int k=0;
+	for(k=0;k<100;k++){
+	    r = evhttp_make_request(evcon, req, data_file ? EVHTTP_REQ_POST : EVHTTP_REQ_GET, uri);
+	    if (r != 0) {
+	        fprintf(stderr, "evhttp_make_request() failed\n");
+	        goto error;
+	    }
 	}
+
 
 	event_base_dispatch(base);
 	goto cleanup;
