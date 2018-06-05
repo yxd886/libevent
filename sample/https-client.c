@@ -49,32 +49,70 @@
 
 static struct event_base *base;
 static int ignore_cert = 0;
+int r;
+
+struct evhttp_uri *http_uri = NULL;
+const char *url = NULL, *data_file = NULL;
+const char *crt = NULL;
+const char *scheme, *host, *path, *query;
+char uri[256];
+int port;
+int retries = 0;
+int timeout = -1;
+SSL_CTX *ssl_ctx = NULL;
+SSL *ssl = NULL;
+struct bufferevent *bev;
+struct evhttp_connection *evcon = NULL;
+struct evhttp_request *req;
+struct evkeyvalq *output_headers;
+struct evbuffer *output_buffer;
+
+int ret = 0;
+enum { HTTP, HTTPS } type = HTTP;
 
 static void
 http_request_done(struct evhttp_request *req, void *ctx)
 {
-	char buffer[256];
-	int nread;
-	struct bufferevent *bev = (struct bufferevent *) ctx;
-    char content[4096];
-    struct evbuffer* input_buffer = bufferevent_get_input(bev);
-   // output_buffer = bufferevent_get_output(evhttp_connection_get_bufferevent(evcon));
-    size_t _len = evbuffer_get_length(input_buffer);
-    printf("len:%d\n",_len);
-    evbuffer_remove(input_buffer,content,_len);
-    printf("before decrypt\n");
-    printf("%.*s\n", _len, content);
-    if(_len % AES_BLOCKLEN != 0) {
-        _len = (_len / AES_BLOCKLEN + 1) * AES_BLOCKLEN;
+    req = evhttp_request_new(http_request_done, bev);
+    if (req == NULL) {
+        fprintf(stderr, "evhttp_request_new() failed\n");
+        exit(-1);
     }
-    struct AES_ctx _ctx;
-    for(int i = 0; i < AES_KEYLEN; i++){
-        key[i] = i * 2;
+
+    output_headers = evhttp_request_get_output_headers(req);
+    evhttp_add_header(output_headers, "Host", host);
+    evhttp_add_header(output_headers, "User-Agent", "curl/7.58.0");
+    evhttp_add_header(output_headers, "Accept", "*/*");
+
+    if (data_file) {
+        /* NOTE: In production code, you'd probably want to use
+         * evbuffer_add_file() or evbuffer_add_file_segment(), to
+         * avoid needless copying. */
+        FILE * f = fopen(data_file, "rb");
+        char buf[1024];
+        size_t s;
+        size_t bytes = 0;
+
+        if (!f) {
+            syntax();
+            exit(-1);
+        }
+
+        output_buffer = evhttp_request_get_output_buffer(req);
+        while ((s = fread(buf, 1, sizeof(buf), f)) > 0) {
+            evbuffer_add(output_buffer, buf, s);
+            bytes += s;
+        }
+        evutil_snprintf(buf, sizeof(buf)-1, "%lu", (unsigned long)bytes);
+        evhttp_add_header(output_headers, "Content-Length", buf);
+        fclose(f);
     }
-    AES_init_ctx_iv(&_ctx, key, iv);
-    AES_CBC_decrypt_buffer(&_ctx, content, _len);
-    printf("after decrypt\n");
-    printf("%.*s\n", _len, content);
+
+    r = evhttp_make_request(evcon, req, data_file ? EVHTTP_REQ_POST : EVHTTP_REQ_GET, uri);
+    if (r != 0) {
+        fprintf(stderr, "evhttp_make_request() failed\n");
+        exit(-1);
+    }
 
 }
 
@@ -173,29 +211,8 @@ static int cert_verify_callback(X509_STORE_CTX *x509_ctx, void *arg)
 int
 main(int argc, char **argv)
 {
-	int r;
 
-	struct evhttp_uri *http_uri = NULL;
-	const char *url = NULL, *data_file = NULL;
-	const char *crt = NULL;
-	const char *scheme, *host, *path, *query;
-	char uri[256];
-	int port;
-	int retries = 0;
-	int timeout = -1;
-	SSL_CTX *ssl_ctx = NULL;
-	SSL *ssl = NULL;
-	struct bufferevent *bev;
-	struct evhttp_connection *evcon = NULL;
-	struct evhttp_request *req;
-	struct evkeyvalq *output_headers;
-	struct evbuffer *output_buffer;
-    char content[4096+sizeof(size_t)];
-    size_t _len =0;
 	int i;
-	int ret = 0;
-	enum { HTTP, HTTPS } type = HTTP;
-
 	for (i = 1; i < argc; i++) {
 		if (!strcmp("-url", argv[i])) {
 			if (i < argc - 1) {
