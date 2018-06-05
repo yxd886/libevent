@@ -436,8 +436,8 @@ main(int argc, char **argv)
 	}
 
 	// Fire off the request
-	int k=0;
-	for (k=0;k<100;k++){
+	//int k=0;
+	//for (k=0;k<100;k++){
 	    req = evhttp_request_new(http_request_done, bev);
 	    if (req == NULL) {
 	        fprintf(stderr, "evhttp_request_new() failed\n");
@@ -479,7 +479,7 @@ main(int argc, char **argv)
 	        goto error;
 	    }
 
-	}
+	//}
 
 
 
