@@ -44,7 +44,6 @@
 #include <openssl/rand.h>
 
 #include "openssl_hostname_validation.h"
-#include "aes.hh"
 
 static struct event_base *base;
 static int ignore_cert = 0;
