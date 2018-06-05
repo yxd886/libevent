@@ -74,46 +74,7 @@ static void
 http_request_done(struct evhttp_request *req, void *ctx)
 {
     printf("make new request\n");
-    req = evhttp_request_new(http_request_done, bev);
-    if (req == NULL) {
-        fprintf(stderr, "evhttp_request_new() failed\n");
-        exit(-1);
-    }
 
-    output_headers = evhttp_request_get_output_headers(req);
-    evhttp_add_header(output_headers, "Host", host);
-    evhttp_add_header(output_headers, "User-Agent", "curl/7.58.0");
-    evhttp_add_header(output_headers, "Accept", "*/*");
-
-    if (data_file) {
-        /* NOTE: In production code, you'd probably want to use
-         * evbuffer_add_file() or evbuffer_add_file_segment(), to
-         * avoid needless copying. */
-        FILE * f = fopen(data_file, "rb");
-        char buf[1024];
-        size_t s;
-        size_t bytes = 0;
-
-        if (!f) {
-            //syntax();
-            exit(-1);
-        }
-
-        output_buffer = evhttp_request_get_output_buffer(req);
-        while ((s = fread(buf, 1, sizeof(buf), f)) > 0) {
-            evbuffer_add(output_buffer, buf, s);
-            bytes += s;
-        }
-        evutil_snprintf(buf, sizeof(buf)-1, "%lu", (unsigned long)bytes);
-        evhttp_add_header(output_headers, "Content-Length", buf);
-        fclose(f);
-    }
-
-    r = evhttp_make_request(evcon, req, data_file ? EVHTTP_REQ_POST : EVHTTP_REQ_GET, uri);
-    if (r != 0) {
-        fprintf(stderr, "evhttp_make_request() failed\n");
-        exit(-1);
-    }
 
 }
 
@@ -437,46 +398,50 @@ main(int argc, char **argv)
 	}
 
 	// Fire off the request
-	req = evhttp_request_new(http_request_done, bev);
-	if (req == NULL) {
-		fprintf(stderr, "evhttp_request_new() failed\n");
-		goto error;
+	int k=0;
+	for (k=0;k<100;k++){
+	    req = evhttp_request_new(http_request_done, bev);
+	    if (req == NULL) {
+	        fprintf(stderr, "evhttp_request_new() failed\n");
+	        goto error;
+	    }
+
+	    output_headers = evhttp_request_get_output_headers(req);
+	    evhttp_add_header(output_headers, "Host", host);
+	    evhttp_add_header(output_headers, "User-Agent", "curl/7.58.0");
+	    evhttp_add_header(output_headers, "Accept", "*/*");
+
+	    if (data_file) {
+	        /* NOTE: In production code, you'd probably want to use
+	         * evbuffer_add_file() or evbuffer_add_file_segment(), to
+	         * avoid needless copying. */
+	        FILE * f = fopen(data_file, "rb");
+	        char buf[1024];
+	        size_t s;
+	        size_t bytes = 0;
+
+	        if (!f) {
+	            syntax();
+	            goto error;
+	        }
+
+	        output_buffer = evhttp_request_get_output_buffer(req);
+	        while ((s = fread(buf, 1, sizeof(buf), f)) > 0) {
+	            evbuffer_add(output_buffer, buf, s);
+	            bytes += s;
+	        }
+	        evutil_snprintf(buf, sizeof(buf)-1, "%lu", (unsigned long)bytes);
+	        evhttp_add_header(output_headers, "Content-Length", buf);
+	        fclose(f);
+	    }
+
+	    r = evhttp_make_request(evcon, req, data_file ? EVHTTP_REQ_POST : EVHTTP_REQ_GET, uri);
+	    if (r != 0) {
+	        fprintf(stderr, "evhttp_make_request() failed\n");
+	        goto error;
+	    }
+
 	}
-
-	output_headers = evhttp_request_get_output_headers(req);
-	evhttp_add_header(output_headers, "Host", host);
-	evhttp_add_header(output_headers, "User-Agent", "curl/7.58.0");
-	evhttp_add_header(output_headers, "Accept", "*/*");
-
-	if (data_file) {
-		/* NOTE: In production code, you'd probably want to use
-		 * evbuffer_add_file() or evbuffer_add_file_segment(), to
-		 * avoid needless copying. */
-		FILE * f = fopen(data_file, "rb");
-		char buf[1024];
-		size_t s;
-		size_t bytes = 0;
-
-		if (!f) {
-			syntax();
-			goto error;
-		}
-
-		output_buffer = evhttp_request_get_output_buffer(req);
-		while ((s = fread(buf, 1, sizeof(buf), f)) > 0) {
-			evbuffer_add(output_buffer, buf, s);
-			bytes += s;
-		}
-		evutil_snprintf(buf, sizeof(buf)-1, "%lu", (unsigned long)bytes);
-		evhttp_add_header(output_headers, "Content-Length", buf);
-		fclose(f);
-	}
-
-    r = evhttp_make_request(evcon, req, data_file ? EVHTTP_REQ_POST : EVHTTP_REQ_GET, uri);
-    if (r != 0) {
-        fprintf(stderr, "evhttp_make_request() failed\n");
-        goto error;
-    }
 
 
 
