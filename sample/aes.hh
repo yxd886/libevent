@@ -156,7 +156,7 @@ struct aes_flow_state {
 }
 
 
- inline static void nf_logic(void *pkt, struct aes_flow_state* state, void *info) {
+ /*inline static void nf_logic(void *pkt, struct aes_flow_state* state, void *info) {
     assert(pkt);
 
     //uint16_t *msg = (uint16_t *)pkt;
@@ -184,7 +184,7 @@ struct aes_flow_state {
    //     memcpy(content, buffer, len);
     //}
 
-}
+}*/
 
 /*
  * Jordan Goulder points out in PR #12 (https://github.com/kokke/tiny-AES-C/pull/12),
