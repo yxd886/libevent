@@ -197,9 +197,6 @@ main(int argc, char **argv)
 	int port;
 	int retries = 0;
 	int timeout = -1;
-	AES _aes;
-	aes_flow_state _aes_fs;
-
 	SSL_CTX *ssl_ctx = NULL;
 	SSL *ssl = NULL;
 	struct bufferevent *bev;
