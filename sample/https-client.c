@@ -442,7 +442,7 @@ main(int argc, char **argv)
 
 	output_headers = evhttp_request_get_output_headers(req);
 	evhttp_add_header(output_headers, "Host", host);
-	evhttp_add_header(output_headers, "Connection", "close");
+	evhttp_add_header(output_headers, "Accept", "*/*");
 
 	if (data_file) {
 		/* NOTE: In production code, you'd probably want to use
