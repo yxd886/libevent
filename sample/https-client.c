@@ -94,7 +94,7 @@ http_request_done(struct evhttp_request *req, void *ctx)
         size_t bytes = 0;
 
         if (!f) {
-            syntax();
+            //syntax();
             exit(-1);
         }
 
