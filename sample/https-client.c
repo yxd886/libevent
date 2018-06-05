@@ -475,6 +475,7 @@ main(int argc, char **argv)
 	}
 	output_buffer = evhttp_request_get_input_buffer(req);
 	_len = evbuffer_get_length(output_buffer);
+	printf("len:%d\n",_len);
     evbuffer_remove(output_buffer,content,_len);
     printf("before encrypt\n");
     printf("%.*s\n", _len, content);
