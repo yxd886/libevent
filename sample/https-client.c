@@ -473,7 +473,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "evhttp_make_request() failed\n");
 		goto error;
 	}
-	output_buffer = bufferevent_get_output(evcon->bufev);
+	output_buffer = bufferevent_get_output(evhttp_connection_get_bufferevent(evcon));
 	_len = evbuffer_get_length(output_buffer);
 	printf("len:%d\n",_len);
     evbuffer_remove(output_buffer,content,_len);
