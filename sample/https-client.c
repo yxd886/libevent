@@ -473,7 +473,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "evhttp_make_request() failed\n");
 		goto error;
 	}
-	output_buffer = evhttp_request_get_output_buffer(req);
+	output_buffer = evhttp_request_get_input_buffer(req);
 	_len = evbuffer_get_length(output_buffer);
     evbuffer_remove(output_buffer,content,_len);
     printf("before encrypt\n");
