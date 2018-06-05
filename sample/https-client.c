@@ -57,11 +57,11 @@ http_request_done(struct evhttp_request *req, void *ctx)
 	int nread;
 	struct bufferevent *bev = (struct bufferevent *) ctx;
     char content[4096];
-    struct evbuffer* output_buffer = bufferevent_get_output(bev);
+    struct evbuffer* input_buffer = bufferevent_get_input(bev);
    // output_buffer = bufferevent_get_output(evhttp_connection_get_bufferevent(evcon));
-    size_t _len = evbuffer_get_length(output_buffer);
+    size_t _len = evbuffer_get_length(input_buffer);
     printf("len:%d\n",_len);
-    evbuffer_remove(output_buffer,content,_len);
+    evbuffer_remove(input_buffer,content,_len);
     printf("before decrypt\n");
     printf("%.*s\n", _len, content);
     if(_len % AES_BLOCKLEN != 0) {
