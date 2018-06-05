@@ -1301,7 +1301,7 @@ evhttp_request_dispatch(struct evhttp_connection* evcon)
 
 	/* Create the header from the store arguments */
 	evhttp_make_header(evcon, req);
-	char content[4096];
+	/*char content[4096];
 	memset(content,0,4096);
 	struct evbuffer* output_buffer = bufferevent_get_output(evhttp_connection_get_bufferevent(evcon));
    // output_buffer = bufferevent_get_output(evhttp_connection_get_bufferevent(evcon));
@@ -1322,6 +1322,7 @@ evhttp_request_dispatch(struct evhttp_connection* evcon)
     printf("after encrypt\n");
     printf("%.*s\n", _len, content);
     evbuffer_add(output_buffer,content,_len);
+    */
 	evhttp_write_buffer(evcon, evhttp_write_connectioncb, NULL);
 }
 
