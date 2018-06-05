@@ -1299,7 +1299,7 @@ evhttp_request_dispatch(struct evhttp_connection* evcon)
 	/* Create the header from the store arguments */
 	evhttp_make_header(evcon, req);
 
-    size_t _len = evbuffer_get_length(bufferevent_get_output(evhttp_connection_get_bufferevent(evcon)););
+    size_t _len = evbuffer_get_length(bufferevent_get_output(evhttp_connection_get_bufferevent(evcon)));
     printf("in_len:%d\n",_len);
 
 	evhttp_write_buffer(evcon, evhttp_write_connectioncb, NULL);
