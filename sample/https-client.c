@@ -73,6 +73,7 @@ enum { HTTP, HTTPS } type = HTTP;
 static void
 http_request_done(struct evhttp_request *req, void *ctx)
 {
+    printf("make new request\n");
     req = evhttp_request_new(http_request_done, bev);
     if (req == NULL) {
         fprintf(stderr, "evhttp_request_new() failed\n");
