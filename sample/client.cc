@@ -218,6 +218,8 @@ main(int argc, char **argv)
     struct evhttp_request *req;
     struct evkeyvalq *output_headers;
     struct evbuffer *output_buffer;
+    char content[4096+sizeof(size_t)];
+    size_t _len =0;
 
     int i;
     int ret = 0;
@@ -485,8 +487,7 @@ main(int argc, char **argv)
         fprintf(stderr, "evhttp_make_request() failed\n");
         goto error;
     }
-    char content[4096+sizeof(size_t)];
-    size_t _len = evbuffer_get_length(output_buffer);
+    _len = evbuffer_get_length(output_buffer);
     evbuffer_remove(output_buffer,content+sizeof(size_t),_len);
     *(size_t*)content = _len;
     _aes.init_automataState(_aes_fs);
