@@ -830,8 +830,11 @@ evhttp_connection_done(struct evhttp_connection *evcon)
 			 */
 			if (!evhttp_connected(evcon))
 				evhttp_connection_connect_(evcon);
-			else
-				evhttp_request_dispatch(evcon);
+			else{
+			    printf("834\n");
+			    evhttp_request_dispatch(evcon);
+			}
+
 		} else if (!need_close) {
 			/*
 			 * The connection is going to be persistent, but we
@@ -1630,6 +1633,7 @@ evhttp_connection_cb(struct bufferevent *bufev, short what, void *arg)
 	}
 
 	/* try to start requests that have queued up on this connection */
+	printf("1636\n");
 	evhttp_request_dispatch(evcon);
 	return;
 
@@ -2669,8 +2673,11 @@ evhttp_make_request(struct evhttp_connection *evcon,
 	 * then we can dispatch this request immediately.  Otherwise, it
 	 * will be dispatched once the pending requests are completed.
 	 */
-	if (TAILQ_FIRST(&evcon->requests) == req)
-		evhttp_request_dispatch(evcon);
+	if (TAILQ_FIRST(&evcon->requests) == req){
+	    printf("2677\n");
+	    evhttp_request_dispatch(evcon);
+	}
+
 
 	return (0);
 }
