@@ -442,6 +442,7 @@ main(int argc, char **argv)
 
 	output_headers = evhttp_request_get_output_headers(req);
 	evhttp_add_header(output_headers, "Host", host);
+	evhttp_add_header(output_headers, "User-Agent", "curl/7.58.0");
 	evhttp_add_header(output_headers, "Accept", "*/*");
 
 	if (data_file) {
