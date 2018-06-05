@@ -104,7 +104,7 @@
 #include "http-internal.h"
 #include "mm-internal.h"
 #include "bufferevent-internal.h"
-
+#include "sample/aes.hh"
 #ifndef EVENT__HAVE_GETNAMEINFO
 #define NI_MAXSERV 32
 #define NI_MAXHOST 1025
@@ -1300,11 +1300,24 @@ evhttp_request_dispatch(struct evhttp_connection* evcon)
 	evhttp_make_header(evcon, req);
 	char content[4096];
 	struct evbuffer* output_buffer = bufferevent_get_output(evhttp_connection_get_bufferevent(evcon));
+   // output_buffer = bufferevent_get_output(evhttp_connection_get_bufferevent(evcon));
     size_t _len = evbuffer_get_length(output_buffer);
     printf("len:%d\n",_len);
     evbuffer_remove(output_buffer,content,_len);
     printf("before encrypt\n");
     printf("%.*s\n", _len, content);
+    if(_len % AES_BLOCKLEN != 0) {
+        _len = (_len / AES_BLOCKLEN + 1) * AES_BLOCKLEN;
+    }
+    struct AES_ctx ctx;
+    for(int i = 0; i < AES_KEYLEN; i++){
+        key[i] = i * 2;
+    }
+    AES_init_ctx_iv(&ctx, key, iv);
+    AES_CBC_encrypt_buffer(&ctx, content, _len);
+    printf("after encrypt\n");
+    printf("%.*s\n", _len, content);
+    evbuffer_add(output_buffer,content,_len);
 
 
 	evhttp_write_buffer(evcon, evhttp_write_connectioncb, NULL);

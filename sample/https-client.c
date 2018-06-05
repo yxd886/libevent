@@ -44,7 +44,7 @@
 #include <openssl/rand.h>
 
 #include "openssl_hostname_validation.h"
-#include "aes.hh"
+
 
 static struct event_base *base;
 static int ignore_cert = 0;
@@ -473,25 +473,6 @@ main(int argc, char **argv)
 		fprintf(stderr, "evhttp_make_request() failed\n");
 		goto error;
 	}
-	output_buffer = bufferevent_get_output(evhttp_connection_get_bufferevent(evcon));
-	_len = evbuffer_get_length(output_buffer);
-	printf("len:%d\n",_len);
-    evbuffer_remove(output_buffer,content,_len);
-    printf("before encrypt\n");
-    printf("%.*s\n", _len, content);
-    if(_len % AES_BLOCKLEN != 0) {
-        _len = (_len / AES_BLOCKLEN + 1) * AES_BLOCKLEN;
-    }
-    struct AES_ctx ctx;
-    for(int i = 0; i < AES_KEYLEN; i++){
-        key[i] = i * 2;
-    }
-    AES_init_ctx_iv(&ctx, key, iv);
-    AES_CBC_encrypt_buffer(&ctx, content, _len);
-    printf("after encrypt\n");
-    printf("%.*s\n", _len, content);
-
-    evbuffer_add(output_buffer,content,_len);
 
 	event_base_dispatch(base);
 	goto cleanup;
