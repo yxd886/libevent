@@ -229,8 +229,9 @@ evconnlistener_new_bind(struct event_base *base, evconnlistener_cb cb,
 
 	if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void*)&on, sizeof(on))<0)
 		goto err;
-
+	printf("before LEV_OPT_REUSEABLE\n");
 	if (flags & LEV_OPT_REUSEABLE) {
+	    printf("LEV_OPT_REUSEABLE\n");
 		if (evutil_make_listen_socket_reuseable(fd) < 0)
 			goto err;
 	}
