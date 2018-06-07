@@ -374,6 +374,7 @@ evutil_make_listen_socket_reuseable(evutil_socket_t sock)
 int
 evutil_make_listen_socket_reuseable_port(evutil_socket_t sock)
 {
+    printf("in reuse\n");
 #if defined __linux__ && defined(SO_REUSEPORT)
 	int one = 1;
 	/* REUSEPORT on Linux 3.9+ means, "Multiple servers (processes or
