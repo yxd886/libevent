@@ -179,8 +179,8 @@ ev_token_bucket_cfg_free(struct ev_token_bucket_cfg *cfg)
 }
 
 /* Default values for max_single_read & max_single_write variables. */
-#define MAX_SINGLE_READ_DEFAULT 16384
-#define MAX_SINGLE_WRITE_DEFAULT 16384
+#define MAX_SINGLE_READ_DEFAULT 16384*10
+#define MAX_SINGLE_WRITE_DEFAULT 16384*10
 
 #define LOCK_GROUP(g) EVLOCK_LOCK((g)->lock, 0)
 #define UNLOCK_GROUP(g) EVLOCK_UNLOCK((g)->lock, 0)
